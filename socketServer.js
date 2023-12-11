@@ -1,19 +1,24 @@
 const socketIo = require('socket.io');
+const { registerRoom } = require('./controllers/rooms');
+const authSocket = require('./middleware/authSocket');
 
 function initializeSocket(server) {
-    console.log('A user connected111111');
+
     const io = socketIo(server,{
         cors: {
-            origin: 'http://localhost:3000',
+            origin: process.env.PORT,
             methods: ['GET', 'POST'],
             credentials: true,
         },
     });
-    console.log('A user connected222222222');
-    io.on('connection', (socket) => {
-        console.log('A user connected33333333');
-        console.log('A user connected');
+
+    io.use(authSocket).on('connection', (socket) => {
         socket.emit("me",socket.id);
+
+        socket.on('join-room',(args)=>{
+            const currentUser = args.decoded;
+            console.log(registerRoom(socket.id,[args.user,currentUser.id]));
+        });
     });
 
     return io;
