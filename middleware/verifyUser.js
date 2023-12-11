@@ -5,7 +5,7 @@ const app = express();
 
 const verifyUser = (req, res, next) => {
   const auth_header = req.headers['authorization'];
-  console.log(auth_header)
+
   if (!auth_header) {
     return res.status(401).json({ message: 'Unauthorized: Token not provided' });
   }
