@@ -1,10 +1,27 @@
 const Rooms = require('../../models/roomSchema');
 
+
+function areParticipantsValid(room, currentUserId, targetUserId) {
+    if (room && Array.isArray(room.participants)) {
+      // Check if the participants array has exactly two elements
+      if (room.participants.length === 2) {
+        // Check if the participants array contains only currentUserId and targetUserId
+        const participantIds = room.participants.map(participant => participant._id.toString());
+        return participantIds.includes(currentUserId.toString()) && participantIds.includes(targetUserId.toString());
+      }
+    }
+  
+    return false;
+  }
+
 async function findOrCreateRoom(targetUserId, currentUserId) {
+
     try{
+
         const room = await Rooms.findOne({ participants: { $all: [targetUserId, currentUserId] } }).populate('participants');
-        if (room) {
-            // console.log("rooooooom1: ",room);
+
+        if (room && areParticipantsValid(room, targetUserId, currentUserId)) {
+            console.log(room);
             return room;
         }
         const date=new Date();
@@ -17,8 +34,8 @@ async function findOrCreateRoom(targetUserId, currentUserId) {
         });
         await room_schema.save();
         const room2 = await Rooms.findOne({ participants: { $all: [targetUserId, currentUserId] } }).populate('participants');
-        // console.log("rooooooom2: ",room2);
         return room2;
+
     }catch(err){
         throw new Error(err.message);
     }
