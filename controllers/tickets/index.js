@@ -1,4 +1,5 @@
 const Tickets = require("\../../models/ticketSchema");
+const Users = require("../../models/userSchema");
 const Mservice = require("../../utils/micro_functions");
 
 exports.getAllTickets=async (req,res)=>{
@@ -53,6 +54,7 @@ exports.addTicket=async (req,res)=>{
                 imagetoUpload.push(slider);
             })
         }
+        const user = Users.findOne({_id:req.user.id});
         const fileSave=await Mservice.multimgUpload(imagetoUpload);
         const ticketSave=new Tickets({
             subject: subject,
@@ -62,14 +64,22 @@ exports.addTicket=async (req,res)=>{
             attachments:fileSave,
             replies:[],
             creator:req.user.id,
-            status:"open",
+            status:"Open",
             day:date.getDate(),
             month:date.getMonth()+1,
             year:date.getFullYear()
         });
-        await ticketSave.save();
 
+        await Promise.all([ticketSave.save(),Mservice.sendMail("support",`[Ticket ID: ${ticketSave._id}] ${subject}`,user.email,{
+            name:user.full_name,
+            ticket:{
+                subject: subject,
+                status: "Open",
+                priority: priority
+            }
+        })]);
         res.status(200).json({status:'success'});
+        
     }catch(err){
         console.log(err);
         res.status(404).json({status:'error'});
