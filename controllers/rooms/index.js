@@ -2,14 +2,10 @@ const Rooms = require('../../models/roomSchema');
 
 
 function areParticipantsValid(room, currentUserId, targetUserId) {
-    console.log("Array.isArray(room.participants): ",room);
+
     if (room && Array.isArray(room.participants)) {
-      // Check if the participants array has exactly two elements
       if (room.participants.length === 2) {
-        // Check if the participants array contains only currentUserId and targetUserId
         const participantIds = room.participants.map(participant => participant._id.toString());
-        console.log("participantIds: ",participantIds,currentUserId,targetUserId);
-        console.log('parrrrrrrtValiiiiid: ',participantIds[0]===currentUserId.toString() && participantIds[1]===targetUserId.toString()||participantIds[1]===currentUserId.toString() && participantIds[0]===targetUserId.toString());
         return participantIds[0]===currentUserId.toString() && participantIds[1]===targetUserId.toString()  ||  participantIds[1]===currentUserId.toString() && participantIds[0]===targetUserId.toString();
       }
     }
@@ -48,7 +44,7 @@ async function findOrCreateRoom(targetUserId, currentUserId) {
 }
 
 async function addChat(room,user,msg,time) {
-    console.log(room._id);
+
     try{
         const newMsg = {
             uid:user._id,

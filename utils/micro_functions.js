@@ -49,7 +49,6 @@ function validateToken(token) {
   console.log('token',token||'pppppppppp');
     try{
         const verify=jwt.verify(token,process.env.JWT_PASS);
-        console.log('verify',verify||'kkkkkkkkkkkkkkk');
         if(!verify) return false
         return verify;
 

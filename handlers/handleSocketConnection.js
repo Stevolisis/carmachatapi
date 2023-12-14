@@ -4,6 +4,7 @@ const { handleGroupChat } = require('./handleGroupChat');
 
 async function handleSocketConnection(socket, io) {
     const currentUser = socket.decoded;
+    console.log("decodeddecoded: ",currentUser);
     let room;
 
     socket.on('join-room',async(args)=>{
@@ -18,6 +19,7 @@ async function handleSocketConnection(socket, io) {
 
             socket.on('group-chat',(msg)=>{
                 const user = room.participants.find(user=>user._id == currentUser.id);
+                console.log("decodeddecoded: ",currentUser.id,user);
                 handleGroupChat(io,room,user,msg);
             });
 
