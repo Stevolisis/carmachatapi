@@ -2,12 +2,15 @@ const Rooms = require('../../models/roomSchema');
 
 
 function areParticipantsValid(room, currentUserId, targetUserId) {
+    console.log("Array.isArray(room.participants): ",room);
     if (room && Array.isArray(room.participants)) {
       // Check if the participants array has exactly two elements
       if (room.participants.length === 2) {
         // Check if the participants array contains only currentUserId and targetUserId
         const participantIds = room.participants.map(participant => participant._id.toString());
-        return participantIds.includes(currentUserId.toString()) && participantIds.includes(targetUserId.toString());
+        console.log("participantIds: ",participantIds,currentUserId,targetUserId);
+        console.log('parrrrrrrtValiiiiid: ',participantIds[0]===currentUserId.toString() && participantIds[1]===targetUserId.toString()||participantIds[1]===currentUserId.toString() && participantIds[0]===targetUserId.toString());
+        return participantIds[0]===currentUserId.toString() && participantIds[1]===targetUserId.toString()  ||  participantIds[1]===currentUserId.toString() && participantIds[0]===targetUserId.toString();
       }
     }
   
@@ -21,7 +24,7 @@ async function findOrCreateRoom(targetUserId, currentUserId) {
         const room = await Rooms.findOne({ participants: { $all: [targetUserId, currentUserId] } }).populate('participants');
 
         if (room && areParticipantsValid(room, targetUserId, currentUserId)) {
-            console.log(room);
+
             return room;
         }
         const date=new Date();
@@ -34,7 +37,10 @@ async function findOrCreateRoom(targetUserId, currentUserId) {
         });
         await room_schema.save();
         const room2 = await Rooms.findOne({ participants: { $all: [targetUserId, currentUserId] } }).populate('participants');
-        return room2;
+
+        if (room2 && areParticipantsValid(room2, targetUserId, currentUserId)) {
+            return room2;
+        }
 
     }catch(err){
         throw new Error(err.message);
@@ -42,6 +48,7 @@ async function findOrCreateRoom(targetUserId, currentUserId) {
 }
 
 async function addChat(room,user,msg,time) {
+    console.log(room._id);
     try{
         const newMsg = {
             uid:user._id,

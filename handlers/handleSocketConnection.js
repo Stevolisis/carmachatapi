@@ -1,15 +1,16 @@
 // socket/handleSocketConnection.js
 const { findOrCreateRoom } = require('../controllers/rooms');
-const Room = require('../models/roomSchema');
 const { handleGroupChat } = require('./handleGroupChat');
 
 async function handleSocketConnection(socket, io) {
     const currentUser = socket.decoded;
+    let room;
 
     socket.on('join-room',async(args)=>{
-        const room = await findOrCreateRoom(args.target, currentUser.id);
+        room = await findOrCreateRoom(args.target, currentUser.id);
 
         if (room) {
+            socket.leave(room._id.toString());
             socket.join(room._id.toString());
             socket.emit("me",currentUser.id);
             io.to(room._id.toString()).emit('chats', room.chats);
@@ -19,7 +20,9 @@ async function handleSocketConnection(socket, io) {
                 const user = room.participants.find(user=>user._id == currentUser.id);
                 handleGroupChat(io,room,user,msg);
             });
+
         }
+
     });
 }
 
