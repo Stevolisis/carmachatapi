@@ -1,10 +1,6 @@
 const mongoose=require('mongoose');
 
 const ticketSchema=new mongoose.Schema({
-    ticket_number:{
-        type:String,
-        required: [true, "Description field required"]
-    },
     subject:{
         type:String,
         required: [true, "Subject field required"]
@@ -25,6 +21,11 @@ const ticketSchema=new mongoose.Schema({
         public_id:String,
         url:String
     }],
+    creator:{
+        type:mongoose.Schema.Types.ObjectId
+        ,
+        ref:'users',
+    },
     replies:[{
         sid:{
             type:mongoose.Schema.Types.ObjectId

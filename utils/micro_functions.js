@@ -1,6 +1,60 @@
 const bcrypt=require("bcryptjs");
 require('dotenv').config();
 const jwt=require("jsonwebtoken");
+const { cloudinary } = require("../services/cloudinary");
+
+
+//----------------Send Email-----------------
+
+async function sendMail(template, subject, toEmail, data) {
+
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAILSENDER,
+        pass: process.env.EMAILPASS,
+      },
+      tls: {
+        rejectUnauthorized: false
+    }
+    });
+
+    const emailTemplate=await ejs.renderFile(`${path.dirname(__dirname)}/views/${template}.ejs`,data);
+  
+    var mailOptions = {
+      from: 'harmonicsub8@gmail.com',
+      to: toEmail,
+      subject: subject,
+      html: emailTemplate
+    };
+  
+    try{
+        const send=await transporter.sendMail(mailOptions);
+        if(!send) return false;
+        return true
+    }catch(err){
+        throw new Error(err.message);
+    }
+}
+
+
+//-------------Multi Upload-------------
+async function multimgUpload(files){
+    try{
+     const filesSave=[];
+   
+         for (let i = 0; i < files.length; i++) {
+           const img=await cloudinary.uploader.upload(files[i].path);
+           filesSave.push({public_id:img.public_id,url:img.secure_url});  
+         }
+   
+       return filesSave;
+   
+    }catch(err){
+     throw new Error('Error uploading images')
+   }
+}
+   
 
 //------------Hash Passwords---------------
 async function hashPassword(password) {
@@ -67,4 +121,4 @@ function randomFixedInteger(length) {
 
 
 
-module.exports={hashPassword,validatePassword,generateToken,validateToken,randomFixedInteger};
+module.exports={sendMail,multimgUpload,hashPassword,validatePassword,generateToken,validateToken,randomFixedInteger};

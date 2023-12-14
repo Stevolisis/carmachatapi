@@ -1,7 +1,5 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const Mservice = require('../utils/micro_functions');
-const app = express();
 
 const verifyUser = (req, res, next) => {
   const auth_header = req.headers['authorization'];
