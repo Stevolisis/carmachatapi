@@ -26,6 +26,11 @@ const ticketSchema=new mongoose.Schema({
         ,
         ref:'users',
     },
+    staff:{
+        type:mongoose.Schema.Types.ObjectId
+        ,
+        ref:'staffs',
+    },
     replies:[{
         sid:{
             type:mongoose.Schema.Types.ObjectId

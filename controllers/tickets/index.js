@@ -30,7 +30,7 @@ exports.getTicket=async (req,res)=>{
 
     try{
         const { id }=req.params;
-        const ticket=await Tickets.findOne({_id:id});
+        const ticket=await Tickets.findOne({_id:id}).populate("creator");
         res.status(200).json({status:'success',data:ticket});
     }catch(err){
         console.log(err);
@@ -40,21 +40,25 @@ exports.getTicket=async (req,res)=>{
 }
 
 exports.addTicket=async (req,res)=>{
-    console.log("add_tickets Fields: ",req.fields)
+    console.log("add_tickets Fields: ",req.fields);
     try{
         const imagetoUpload=[];
         const { subject,category,priority,description }=req.fields;
         const date=new Date();
 
         if(!Array.isArray(req.files.attachments)){
-            imagetoUpload.push(req.files.attachments)
+            if(req.files.attachments.size !== 0){
+               imagetoUpload.push(req.files.attachments); 
+            };
+            
         } else{
             let attachmentsIn=req.files.attachments;
             attachmentsIn.forEach(slider=>{
                 imagetoUpload.push(slider);
             })
         }
-        const user = Users.findOne({_id:req.user.id});
+        const user = await Users.findOne({_id:req.user.id});
+        console.log("oouuuuuuuuuuussssssssser: ",user);
         const fileSave=await Mservice.multimgUpload(imagetoUpload);
         const ticketSave=new Tickets({
             subject: subject,
@@ -70,16 +74,18 @@ exports.addTicket=async (req,res)=>{
             year:date.getFullYear()
         });
 
-        await Promise.all([ticketSave.save(),Mservice.sendMail("support",`[Ticket ID: ${ticketSave._id}] ${subject}`,user.email,{
+        await ticketSave.save()
+        const mail= await Mservice.sendMail("support",`[Ticket ID: ${ticketSave._id}] ${subject}`,"stevolisisjosephpur@gmail.com",{
             name:user.full_name,
             ticket:{
                 subject: subject,
                 status: "Open",
                 priority: priority
             }
-        })]);
+        });
+        console.log("mmmmmmmail: ",mail);
         res.status(200).json({status:'success'});
-        
+
     }catch(err){
         console.log(err);
         res.status(404).json({status:'error'});

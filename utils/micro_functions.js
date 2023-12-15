@@ -1,34 +1,37 @@
 const bcrypt=require("bcryptjs");
 require('dotenv').config();
 const jwt=require("jsonwebtoken");
+const nodemailer=require("nodemailer");
+const ejs=require("ejs");
+const path=require("path");
 const { cloudinary } = require("../services/cloudinary");
 
 
 //----------------Send Email-----------------
 
 async function sendMail(template, subject, toEmail, data) {
-
-    var transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAILSENDER,
-        pass: process.env.EMAILPASS,
-      },
-      tls: {
-        rejectUnauthorized: false
-    }
-    });
-
-    const emailTemplate=await ejs.renderFile(`${path.dirname(__dirname)}/views/${template}.ejs`,data);
-  
-    var mailOptions = {
-      from: 'harmonicsub8@gmail.com',
-      to: toEmail,
-      subject: subject,
-      html: emailTemplate
-    };
   
     try{
+        var transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAILSENDER,
+                pass: process.env.EMAILPASS,
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+            });
+        
+            const emailTemplate=await ejs.renderFile(`${path.dirname(__dirname)}/views/${template}.ejs`,data);
+        
+            var mailOptions = {
+            from: 'harmonicsub8@gmail.com',
+            to: toEmail,
+            subject: subject,
+            html: emailTemplate
+            };
+
         const send=await transporter.sendMail(mailOptions);
         if(!send) return false;
         return true
@@ -41,16 +44,21 @@ async function sendMail(template, subject, toEmail, data) {
 //-------------Multi Upload-------------
 async function multimgUpload(files){
     try{
-     const filesSave=[];
+        const filesSave=[];
+        if(files.size !== 0){
+            for (let i = 0; i < files.length; i++) {
+                const img=await cloudinary.uploader.upload(files[i].path);
+                filesSave.push({public_id:img.public_id,url:img.secure_url});  
+            }
+            return filesSave;
+        }else{
+            return [];
+        }
    
-         for (let i = 0; i < files.length; i++) {
-           const img=await cloudinary.uploader.upload(files[i].path);
-           filesSave.push({public_id:img.public_id,url:img.secure_url});  
-         }
-   
-       return filesSave;
+       
    
     }catch(err){
+        console.log(err);
      throw new Error('Error uploading images')
    }
 }
