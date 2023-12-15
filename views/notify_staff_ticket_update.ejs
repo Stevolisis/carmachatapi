@@ -31,14 +31,10 @@ padding: 12px;'>
 style='padding: 12px;
 font-size: 15px;'>
 
-	<div><p style="color:black"> <%=name%>,<p/>
+	<div>
 		<h3><%=message%></h3>
-		<% if (link) { %>
-			<p>View Ticket <a href="<%= link %>">Click here</a></p>
-		<% } else { %>
-			<p></p>
-		<% } %>
-        <p>Details of your ticket are shown below:</p>
+		<p>View Ticket <a href="<%=link%>">Click Here</a></p>
+        <p>Details of the ticket are shown below:</p>
         <p>Subject: <%=ticket.subject%></p>
         <p>Priority: <%=ticket.priority%></p>
         <p>Status: <%=ticket.status%></p>

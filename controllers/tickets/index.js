@@ -30,7 +30,7 @@ exports.getTicket=async (req,res)=>{
 
     try{
         const { id }=req.params;
-        const ticket=await Tickets.findOne({_id:id}).populate("creator");
+        const ticket=await Tickets.findOne({_id:id}).populate("creator staff replies.sid replies.uid");
         res.status(200).json({status:'success',data:ticket});
     }catch(err){
         console.log(err);
@@ -115,6 +115,7 @@ exports.updateTicketStatus=async (req,res)=>{
             }});
             const mail = await Mservice.sendMail("ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,"stevolisisjosephpur@gmail.com",{
                 name:ticket.creator.full_name,
+                link:`http://localhost:3000/ticket_info2/${id}`,
                 message:`Your Ticket has been ${req.fields.status}`,
                 ticket:{
                     subject: ticket.subject,
@@ -144,6 +145,7 @@ exports.replyTicket=async (req,res)=>{
         const newReply = {
             sid: from==="staff" ? req.user.id : req.fields.user,
             uid: from==="staff" ? req.fields.user : req.user.id,
+            from: from,
             text:req.fields.msg,
             time:new Date().toISOString()
         }
@@ -156,7 +158,18 @@ exports.replyTicket=async (req,res)=>{
         if(from==="staff"){
             await Mservice.sendMail("ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,"stevolisisjosephpur@gmail.com",{
                 name:user.full_name,
+                link:`http://localhost:3000/ticket_replies2/${id}`,
                 message:req.fields.msg,
+                ticket:{
+                    subject: ticket.subject,
+                    status: ticket.status,
+                    priority: ticket.priority
+                }
+            });
+        }else{
+            await Mservice.sendMail("notify_staff_ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,"stevolisisjoseph@gmail.com",{
+                message:req.fields.msg,
+                link:`http://localhost:3000/ticket_replies/${id}`,
                 ticket:{
                     subject: ticket.subject,
                     status: ticket.status,
@@ -171,18 +184,4 @@ exports.replyTicket=async (req,res)=>{
         console.log(err);
         res.status(404).json({status:err.message}); 
     }
-}
-
-
-exports.getTicketReplies=async (req,res)=>{
-
-    try{
-        const { id }=req.params;
-        const ticket=await Tickets.findOne({_id:id}).populate("creator staff replies");
-        res.status(200).json({status:'success',data:ticket});
-    }catch(err){
-        console.log(err);
-        res.status(404).json({status:'error', data:err.message});
-    }
-
 }

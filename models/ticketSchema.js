@@ -42,6 +42,9 @@ const ticketSchema=new mongoose.Schema({
             ,
             ref:'users',
         },
+        from:{
+            type:String,
+        },
         text:{
             type:String,
         },
