@@ -92,3 +92,33 @@ exports.addTicket=async (req,res)=>{
     }
 
 }
+
+
+exports.updateTicketStatus=async (req,res)=>{
+
+    try{
+        const { id } = req.params;
+        console.log("uuuuuupdte: ",id,req.user);
+        if(req.fields.status === "In Progress"){
+            const ticketUpdate=await Tickets.updateOne({_id:id},{$set:{
+                status:req.fields.status,
+                staff:req.user.id,
+                update_at:new Date().toISOString()
+            }});
+            console.log(ticketUpdate)
+            if(ticketUpdate) res.status(200).json({status:'success'});            
+        }else{
+            const ticketUpdate=await Tickets.updateOne({_id:id},{$set:{
+                status:req.fields.status,
+                update_at:new Date().toISOString()
+            }});
+            console.log(ticketUpdate)
+            if(ticketUpdate) res.status(200).json({status:'success'});   
+    }
+
+    }catch(err){
+        console.log(err);
+        res.status(404).json({status:'error', data:err.message});
+    }
+
+}
