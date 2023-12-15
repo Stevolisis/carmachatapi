@@ -98,24 +98,88 @@ exports.updateTicketStatus=async (req,res)=>{
 
     try{
         const { id } = req.params;
-        console.log("uuuuuupdte: ",id,req.user);
+        const ticket=await Tickets.findOne({_id:id}).populate("creator");
+
         if(req.fields.status === "In Progress"){
             const ticketUpdate=await Tickets.updateOne({_id:id},{$set:{
                 status:req.fields.status,
                 staff:req.user.id,
-                update_at:new Date().toISOString()
+                updateAt:new Date().toISOString()
             }});
             console.log(ticketUpdate)
             if(ticketUpdate) res.status(200).json({status:'success'});            
         }else{
             const ticketUpdate=await Tickets.updateOne({_id:id},{$set:{
                 status:req.fields.status,
-                update_at:new Date().toISOString()
+                updateAt:new Date().toISOString()
             }});
-            console.log(ticketUpdate)
-            if(ticketUpdate) res.status(200).json({status:'success'});   
+            const mail = await Mservice.sendMail("ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,"stevolisisjosephpur@gmail.com",{
+                name:ticket.creator.full_name,
+                message:`Your Ticket has been ${req.fields.status}`,
+                ticket:{
+                    subject: ticket.subject,
+                    status: req.fields.status,
+                    priority: ticket.priority
+                }
+            });
+            console.log(ticketUpdate&&mail)
+            if(ticketUpdate && mail) res.status(200).json({status:'success'});   
     }
 
+    }catch(err){
+        console.log(err);
+        res.status(404).json({status:'error', data:err.message});
+    }
+
+}
+
+
+
+exports.replyTicket=async (req,res)=>{
+
+    try{
+        const { id,from } = req.params;
+        const ticket=await Tickets.findOne({_id:id}).populate("creator");
+        const user = from === "staff" && await Users.findOne({_id:req.fields.user});
+        const newReply = {
+            sid: from==="staff" ? req.user.id : req.fields.user,
+            uid: from==="staff" ? req.fields.user : req.user.id,
+            text:req.fields.msg,
+            time:new Date().toISOString()
+        }
+        await Tickets.updateOne({_id:id},{$set:{
+            updateAt:new Date().toISOString()
+        },$push:{
+            replies:newReply
+        }});
+        
+        if(from==="staff"){
+            await Mservice.sendMail("ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,"stevolisisjosephpur@gmail.com",{
+                name:user.full_name,
+                message:req.fields.msg,
+                ticket:{
+                    subject: ticket.subject,
+                    status: ticket.status,
+                    priority: ticket.priority
+                }
+            });
+        }
+
+        res.status(200).json({status:'success'}); 
+
+    }catch(err){
+        console.log(err);
+        res.status(404).json({status:err.message}); 
+    }
+}
+
+
+exports.getTicketReplies=async (req,res)=>{
+
+    try{
+        const { id }=req.params;
+        const ticket=await Tickets.findOne({_id:id}).populate("creator staff replies");
+        res.status(200).json({status:'success',data:ticket});
     }catch(err){
         console.log(err);
         res.status(404).json({status:'error', data:err.message});
