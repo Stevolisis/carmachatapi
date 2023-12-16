@@ -18,6 +18,10 @@ const userSchema=new mongoose.Schema({
         type:String,
         required: [true, "status field required"]
     },
+    package:{
+        type:String,
+        required: [true, "Package field required"]
+    },
     day:{
         type:String,
         required: [true, "day field required"],

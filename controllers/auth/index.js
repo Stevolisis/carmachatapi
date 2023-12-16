@@ -22,6 +22,7 @@ exports.register=async (req,res,next)=>{
                 email:email,
                 password:hashed_password,
                 status:'active',
+                package:'basic',
                 day:date.getDate(),
                 month:date.getMonth()+1,
                 year:date.getFullYear()
