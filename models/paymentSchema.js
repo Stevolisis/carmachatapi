@@ -18,6 +18,10 @@ const paymentSchema=new mongoose.Schema({
         type:String,
         required: [true, "package field required"]
     },
+    confirmed:{
+        type:Boolean,
+        required: [true, "Confirmed field required"]
+    },
     time_of_transaction:{
         type:String,
         required: [true, "Time Of Transaction field required"]

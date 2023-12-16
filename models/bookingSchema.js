@@ -6,6 +6,11 @@ const bookingSchema=new mongoose.Schema({
         ,
         ref:'users',
     },
+    sid:{
+        type:mongoose.Schema.Types.ObjectId
+        ,
+        ref:'staffs',
+    },
     svid:{
         type:mongoose.Schema.Types.ObjectId
         ,

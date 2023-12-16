@@ -1,10 +1,10 @@
 const bcrypt=require("bcryptjs");
 require('dotenv').config();
 const jwt=require("jsonwebtoken");
-const nodemailer=require("nodemailer");
 const ejs=require("ejs");
 const path=require("path");
-const { cloudinary } = require("../services/cloudinary");
+const { cloudinary } = require("../services/cloudinaryConfig");
+const { transporter } = require("../services/nodemailConfig");
 
 
 //----------------Send Email-----------------
@@ -12,25 +12,14 @@ const { cloudinary } = require("../services/cloudinary");
 async function sendMail(template, subject, toEmail, data) {
   
     try{
-        var transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.EMAILSENDER,
-                pass: process.env.EMAILPASS,
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-            });
-        
-            const emailTemplate=await ejs.renderFile(`${path.dirname(__dirname)}/views/${template}.ejs`,data);
-        
-            var mailOptions = {
-            from: 'harmonicsub8@gmail.com',
-            to: toEmail,
-            subject: subject,
-            html: emailTemplate
-            };
+        const emailTemplate=await ejs.renderFile(`${path.dirname(__dirname)}/views/${template}.ejs`,data);
+    
+        var mailOptions = {
+        from: 'harmonicsub8@gmail.com',
+        to: toEmail,
+        subject: subject,
+        html: emailTemplate
+        };
 
         const send=await transporter.sendMail(mailOptions);
         if(!send) return false;
@@ -127,6 +116,30 @@ function randomFixedInteger(length) {
 
 
 
+//---------Generate Stripe Link-------
+async function generatePaymentLink(service,user,sid) {
+    try{
+        // const paymentIntent = await stripe.paymentIntents.create({
+        //     amount: service.pricing,
+        //     currency: 'usd',
+        //     description: `Payment for ${service.name}`,
+        //     receipt_email: user.email,
+        //     metadata: {
+        //         uid:user._id,
+        //         sid:sid,
+        //         svid:service._id
+        //     },
+        //   });
+          
+        console.log("paymentIntentpaymentIntent: ",paymentIntent);
+        return paymentIntent
+
+    }catch{
+        return false
+    }
+}
 
 
-module.exports={sendMail,multimgUpload,hashPassword,validatePassword,generateToken,validateToken,randomFixedInteger};
+
+
+module.exports={generatePaymentLink,sendMail,multimgUpload,hashPassword,validatePassword,generateToken,validateToken,randomFixedInteger};

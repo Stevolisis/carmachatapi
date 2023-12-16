@@ -1,4 +1,4 @@
-const Tickets = require("\../../models/ticketSchema");
+const Tickets = require("../../models/ticketSchema");
 const Users = require("../../models/userSchema");
 const Mservice = require("../../utils/micro_functions");
 

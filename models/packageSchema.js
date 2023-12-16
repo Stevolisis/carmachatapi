@@ -9,9 +9,9 @@ const packageSchema=new mongoose.Schema({
         type:String,
         required: [true, "Type field required"]
     },
-    pricing:{
+    charges:{
         type:Number,
-        required: [true, "Pricing field required"]
+        required: [true, "Charges field required"]
     },
     description:{
         type:String,
