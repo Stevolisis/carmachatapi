@@ -28,7 +28,7 @@ exports.addPackage=async (req,res)=>{
 exports.getServices=async (req,res)=>{
 
     try{
-        const services=await Services.find({});
+        const services=await Services.find({}).populate("sid");
         res.status(200).json({status:'success',data:services});
     }catch(err){
         console.log(err);
@@ -42,7 +42,7 @@ exports.getService=async (req,res)=>{
 
     try{
         const { id }=req.params;
-        const service=await Services.findOne({_id:id});
+        const service=await Services.findOne({_id:id}).populate("sid");
         res.status(200).json({status:'success',data:service});
     }catch(err){
         console.log(err);

@@ -20,6 +20,10 @@ const bookingSchema=new mongoose.Schema({
         type:Number,
         required: [true, "Pricing field required"]
     },
+    complete:{
+        type:Boolean,
+        required: [true, "Booking field required"]
+    },
 },
 {
     timestamps:true

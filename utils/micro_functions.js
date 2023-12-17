@@ -116,30 +116,87 @@ function randomFixedInteger(length) {
 
 
 
-//---------Generate Stripe Link-------
-async function generatePaymentLink(service,user,sid) {
+//---------Generate One time Stripe Link-------
+async function generateOneTimePaymentLink(service,user,booking) {
     try{
-        // const paymentIntent = await stripe.paymentIntents.create({
-        //     amount: service.pricing,
-        //     currency: 'usd',
-        //     description: `Payment for ${service.name}`,
-        //     receipt_email: user.email,
-        //     metadata: {
-        //         uid:user._id,
-        //         sid:sid,
-        //         svid:service._id
-        //     },
-        //   });
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+            {
+                price_data: {
+                currency: 'usd',
+                product_data: {
+                    name: service.name,
+                },
+                unit_amount: service.pricing,
+                },
+                quantity: 1,
+            },
+            ],
+            mode: 'payment',
+            metadata:{
+                booking_id: booking._id,
+                uid: user._id
+            },
+            success_url: 'http://localhost:3000/dashboard',
+            cancel_url: 'http://localhost:3000/dashboard',
+            customer_email:user.email
+        });
           
-        console.log("paymentIntentpaymentIntent: ",paymentIntent);
-        return paymentIntent
+        console.log("session.idsession.idsession.id: ",session);
+        if(session){
+            return session
+        }else{
+            return false
+        }
 
-    }catch{
+    }catch(err){
+        console.log("Stripeee Error: ",err);
+        return false
+    }
+}
+
+
+//---------Generate Subscription Stripe Link-------
+async function generateSubscriptionPaymentLink(user,package) {
+    try{
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+            {
+                price_data: {
+                currency: 'usd',
+                product_data: {
+                    name: package.name,
+                },
+                unit_amount: package.amount,
+                },
+                quantity: 1,
+            },
+            ],
+            mode: 'subscription',
+            metadata:{
+                uid: user._id,
+                pid: package
+            },
+            success_url: 'http://localhost:3000/dashboard',
+            cancel_url: 'http://localhost:3000/dashboard',
+            customer_email:user.email
+        });
+          
+        console.log("session.idsession.idsession.id: ",session);
+        if(session){
+            return session
+        }else{
+            return false
+        }
+
+    }catch(err){
+        console.log("Stripeee Error: ",err);
         return false
     }
 }
 
 
 
-
-module.exports={generatePaymentLink,sendMail,multimgUpload,hashPassword,validatePassword,generateToken,validateToken,randomFixedInteger};
+module.exports={generateOneTimePaymentLink,generateSubscriptionPaymentLink,sendMail,multimgUpload,hashPassword,validatePassword,generateToken,validateToken,randomFixedInteger};
