@@ -24,7 +24,7 @@ exports.addBooking=async (req,res)=>{
                 if(saveBooking){
                     const payStripe = Mservice.generateOneTimePaymentLink(service,user,saveBooking);
                     console.log("payStripepayStripe: ",payStripe);
-                    
+
                     if(payStripe){
                         res.status(200).json({status:'success',link:`https://checkout.stripe.com/pay/${payStripe.id}`});
                     }else{
@@ -73,11 +73,27 @@ exports.addBooking=async (req,res)=>{
 
 
 
-exports.getBookings=async (req,res)=>{
+exports.getUserBookings=async (req,res)=>{
 
     try{
-        const services=await Bookings.find({}).populate("uid sid svid");
-        res.status(200).json({status:'success',data:services});
+        const { id } = req.user;
+        const bookings=await Bookings.find({uid:id}).populate("uid sid svid");
+        res.status(200).json({status:'success',data:bookings});
+
+    }catch(err){
+        console.log(err);
+        res.status(404).json({status:'error', data:err.message});
+    }
+
+}
+
+exports.getStaffBookings=async (req,res)=>{
+
+    try{
+        const { id } = req.user;
+        const bookings=await Bookings.find({sid:id}).populate("uid sid svid");
+        res.status(200).json({status:'success',data:bookings});
+
     }catch(err){
         console.log(err);
         res.status(404).json({status:'error', data:err.message});
@@ -86,12 +102,12 @@ exports.getBookings=async (req,res)=>{
 }
 
 
-exports.getService=async (req,res)=>{
+exports.getBooking=async (req,res)=>{
 
     try{
         const { id }=req.params;
-        const service=await Bookings.findOne({_id:id}).populate("uid sid svid");
-        res.status(200).json({status:'success',data:service});
+        const booking=await Bookings.findOne({_id:id}).populate("uid sid svid");
+        res.status(200).json({status:'success',data:booking});
     }catch(err){
         console.log(err);
         res.status(404).json({status:'error', data:err.message});
@@ -100,24 +116,20 @@ exports.getService=async (req,res)=>{
 }
 
 
-exports.editService=async (req,res)=>{
+// exports.cancelBooking=async (req,res)=>{
 
-    try{
-        const { name, package, pricing, details} = req.fields;
-        const editService=await Bookings.updateOne({_id:id},{$set:{
-            name:name,
-            package:package,
-            pricing:pricing,
-            details:details,
-        }});
-        if(editService){
-            res.status(200).json({status:'success'});
-        }else{
-            res.status(404).json({status:'error in update'});
-        }
-    }catch(err){
-        console.log(err);
-        res.status(404).json({status:'error', data:err.message});
-    }
+//     try{
+//         const { id } = req.params;
+//         const editService=await Bookings.deleteOne({_id:id});
+//         // refund user not implemented yet
+//         if(editService){
+//             res.status(200).json({status:'success'});
+//         }else{
+//             res.status(404).json({status:'error in delete'});
+//         }
+//     }catch(err){
+//         console.log(err);
+//         res.status(404).json({status:'error', data:err.message});
+//     }
 
-}
+// }

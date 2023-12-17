@@ -7,6 +7,9 @@ const socketApi = require('./socketServer');
 const authRoute=require('./routes/auth');
 const userRoute=require('./routes/users');
 const ticketRoute=require('./routes/tickets');
+const packageRoute=require('./routes/packages');
+const serviceRoute=require('./routes/services');
+const bookingRoute=require('./routes/bookings');
 const formidableMiddleware = require('express-formidable');
 const { Server } = require('socket.io');
 require('dotenv').config();
@@ -28,6 +31,9 @@ app.use(formidableMiddleware({multiples: true}));
 app.use('/auth',authRoute);
 app.use('/users',userRoute);
 app.use('/tickets',ticketRoute);
+app.use('/packages',packageRoute);
+app.use('/services',serviceRoute);
+app.use('/bookings',bookingRoute);
 
 
 

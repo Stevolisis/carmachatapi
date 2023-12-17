@@ -56,6 +56,7 @@ exports.editPackage=async (req,res)=>{
 
     try{
         const { charges,description }=req.fields;
+        const { id } = req.params;
         const editPackage=await Packages.updateOne({_id:id},{$set:{
             charges:charges,
             description:description
@@ -73,7 +74,7 @@ exports.editPackage=async (req,res)=>{
 }
 
 
-exports.subscribePackage=async (req,res)=>{
+exports.subscribeToPackage=async (req,res)=>{
 
     try{
         const { package }=req.fields;

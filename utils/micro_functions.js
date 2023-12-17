@@ -135,7 +135,7 @@ async function generateOneTimePaymentLink(service,user,booking) {
             ],
             mode: 'payment',
             metadata:{
-                booking_id: booking._id,
+                bid: booking._id,
                 uid: user._id
             },
             success_url: 'http://localhost:3000/dashboard',

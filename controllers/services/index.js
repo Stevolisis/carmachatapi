@@ -1,6 +1,6 @@
 const Services = require("../../models/serviceSchema");
 
-exports.addPackage=async (req,res)=>{
+exports.addService=async (req,res)=>{
     try{
         const { sid, name, package, pricing, details} = req.fields;
         const newService = new Services({
