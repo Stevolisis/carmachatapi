@@ -20,6 +20,9 @@ const bookingSchema=new mongoose.Schema({
         type:String,
         required: [true, "Package field required"]
     },
+    session_id:{
+        type:String,
+    },
     complete:{
         type:Boolean,
         required: [true, "Booking field required"]

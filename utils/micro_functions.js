@@ -119,6 +119,7 @@ function randomFixedInteger(length) {
 //---------Generate One time Stripe Link-------
 async function generateOneTimePaymentLink(service,user,booking) {
     try{
+        console.log(user)
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
@@ -128,7 +129,7 @@ async function generateOneTimePaymentLink(service,user,booking) {
                 product_data: {
                     name: service.name,
                 },
-                unit_amount: service.pricing,
+                unit_amount: Math.round(service.pricing * 100),
                 },
                 quantity: 1,
             },
@@ -138,9 +139,9 @@ async function generateOneTimePaymentLink(service,user,booking) {
                 bid: booking._id,
                 uid: user._id
             },
-            success_url: 'http://localhost:3000/dashboard',
-            cancel_url: 'http://localhost:3000/dashboard',
-            customer_email:user.email
+            success_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
+            customer_email:"harmonicsub8@gmail.com"
         });
           
         console.log("session.idsession.idsession.id: ",session);
@@ -169,7 +170,7 @@ async function generateSubscriptionPaymentLink(user,package) {
                 product_data: {
                     name: package.name,
                 },
-                unit_amount: package.amount,
+                unit_amount: Math.round(package.amount * 100),
                 },
                 quantity: 1,
             },
@@ -179,9 +180,9 @@ async function generateSubscriptionPaymentLink(user,package) {
                 uid: user._id,
                 pid: package
             },
-            success_url: 'http://localhost:3000/dashboard',
-            cancel_url: 'http://localhost:3000/dashboard',
-            customer_email:user.email
+            success_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
+            customer_email:"harmonicsub8@gmail.com"
         });
           
         console.log("session.idsession.idsession.id: ",session);
