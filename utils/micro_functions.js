@@ -185,7 +185,7 @@ async function generateSubscriptionPaymentLink(user,package) {
             customer_email:"harmonicsub8@gmail.com"
         });
           
-        console.log("session.idsession.idsession.id: ",session);
+        // console.log("session.idsession.idsession.id: ",session);
         if(session){
             return session
         }else{
@@ -200,4 +200,23 @@ async function generateSubscriptionPaymentLink(user,package) {
 
 
 
-module.exports={generateOneTimePaymentLink,generateSubscriptionPaymentLink,sendMail,multimgUpload,hashPassword,validatePassword,generateToken,validateToken,randomFixedInteger};
+
+
+//---------Generate setLength of Random Number-------
+async function getPaymentStatus(session_id) {
+    try{
+        const session = await stripe.checkout.sessions.retrieve(session_id);
+        console.log("getPaymentStatusgetPaymentStatus: ",getPaymentStatus);
+        if(session){
+            return session
+        }else{
+            return false
+        }
+    }catch(err){
+        console.log("Stripeee Error: ",err);
+        return false
+    }
+}
+
+
+module.exports={getPaymentStatus,generateOneTimePaymentLink,generateSubscriptionPaymentLink,sendMail,multimgUpload,hashPassword,validatePassword,generateToken,validateToken,randomFixedInteger};
