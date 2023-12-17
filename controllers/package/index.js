@@ -86,7 +86,7 @@ exports.subscribeToPackage=async (req,res)=>{
             if(user.package === package){
                 res.status(200).json({status:'Package already registered by you'});
             }else{
-                const payStripe = Mservice.generateSubscriptionPaymentLink(user,package);
+                const payStripe = await Mservice.generateSubscriptionPaymentLink(user,package);
                 console.log("payStripepayStripeSUbSubSub: ",payStripe);
                 
                 if(payStripe){

@@ -5,7 +5,7 @@ const ejs=require("ejs");
 const path=require("path");
 const { cloudinary } = require("../services/cloudinaryConfig");
 const { transporter } = require("../services/nodemailConfig");
-
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 //----------------Send Email-----------------
 

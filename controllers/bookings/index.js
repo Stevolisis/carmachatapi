@@ -22,7 +22,7 @@ exports.addBooking=async (req,res)=>{
                 console.log("saveBookingsaveBooking: ",saveBooking);
 
                 if(saveBooking){
-                    const payStripe = Mservice.generateOneTimePaymentLink(service,user,saveBooking);
+                    const payStripe = await Mservice.generateOneTimePaymentLink(service,user,saveBooking);
                     console.log("payStripepayStripe: ",payStripe);
 
                     if(payStripe){
