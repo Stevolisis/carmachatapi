@@ -9,13 +9,13 @@ exports.addBooking=async (req,res)=>{
         const user = Users.findOne({_id:uid});
 
         if(user){
-            if(service.package === "basic"){
+            if(service.pid.name === "basic"){
 
                 const newBooking = new Bookings({
                     uid:uid,
                     sid:service.sid._id,
                     svid:service._id,
-                    package:service.package,
+                    package:service.pid.name,
                     complete:false
                 })
                 const saveBooking = await newBooking.save();
@@ -36,12 +36,12 @@ exports.addBooking=async (req,res)=>{
                 }
 
             }else{
-                if(user.package === service.package){
+                if(user.package === service.pid.name){
                     const newBooking = new Bookings({
                         uid:uid,
                         sid:service.sid._id,
                         svid:service._id,
-                        package:service.package,
+                        package:service.pid.name,
                         complete:true
                     })
                     const saveBooking = await newBooking.save();

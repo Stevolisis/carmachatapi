@@ -6,11 +6,11 @@ exports.addService=async (req,res)=>{
         const newService = new Services({
             sid:sid,
             name:name,
-            package:package,
+            pid:package,
             pricing:pricing,
             details:details,
         })
-        const serviceSave = await newService();
+        const serviceSave = await newService.save();
         if(serviceSave){
             res.status(200).json({status:'success'});  
         }else{
@@ -18,7 +18,7 @@ exports.addService=async (req,res)=>{
         }
 
     }catch(err){
-        throw new Error(err.message);
+        res.status(500).json({status:err.message});  
     }
 }
 
@@ -28,7 +28,7 @@ exports.addService=async (req,res)=>{
 exports.getServices=async (req,res)=>{
 
     try{
-        const services=await Services.find({}).populate("sid");
+        const services=await Services.find({}).populate("sid pid");
         res.status(200).json({status:'success',data:services});
     }catch(err){
         console.log(err);
@@ -42,7 +42,7 @@ exports.getService=async (req,res)=>{
 
     try{
         const { id }=req.params;
-        const service=await Services.findOne({_id:id}).populate("sid");
+        const service=await Services.findOne({_id:id}).populate("sid pid");
         res.status(200).json({status:'success',data:service});
     }catch(err){
         console.log(err);
@@ -58,7 +58,7 @@ exports.editService=async (req,res)=>{
         const { name, package, pricing, details} = req.fields;
         const editService=await Services.updateOne({_id:id},{$set:{
             name:name,
-            package:package,
+            pid:package,
             pricing:pricing,
             details:details,
         }});

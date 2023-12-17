@@ -6,12 +6,12 @@ exports.addPackage=async (req,res)=>{
     try{
         const { name, type, pricing, description} = req.fields;
         const newPackage = new Packages({
-            name:name,
+            name:name.toLowerCase(),
             type:type,
             pricing:pricing,
             description:description,
         })
-        const packageSave = await newPackage();
+        const packageSave = await newPackage.save();
         if(packageSave){
             res.status(200).json({status:'success'});  
         }else{
@@ -19,7 +19,7 @@ exports.addPackage=async (req,res)=>{
         }
 
     }catch(err){
-        throw new Error(err.message);
+        res.status(500).json({status:err.message});  
     }
 }
 

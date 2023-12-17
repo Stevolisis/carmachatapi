@@ -10,13 +10,13 @@ const serviceSchema=new mongoose.Schema({
         type:String,
         required: [true, "Name field required"]
     },
-    package:{
-        type:String,
-        required: [true, "Package field required"]
+    pid:{
+        type:mongoose.Schema.Types.ObjectId
+        ,
+        ref:'packages',
     },
     pricing:{
         type:Number,
-        required: [false, "Pricing field required"]
     },
     details:{
         type:String,
