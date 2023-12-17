@@ -2,11 +2,13 @@ const Services = require("../../models/serviceSchema");
 
 exports.addService=async (req,res)=>{
     try{
-        const { sid, name, package, pricing, details} = req.fields;
+        const { name, package, pricing, details} = req.fields;
+        const sid = req.user.id;
+        
         const newService = new Services({
             sid:sid,
             name:name,
-            pid:package,
+            pid:package.split("-")[0],
             pricing:pricing,
             details:details,
         })
@@ -18,6 +20,7 @@ exports.addService=async (req,res)=>{
         }
 
     }catch(err){
+        console.log(err);
         res.status(500).json({status:err.message});  
     }
 }

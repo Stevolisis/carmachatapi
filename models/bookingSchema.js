@@ -17,8 +17,8 @@ const bookingSchema=new mongoose.Schema({
         ref:'services',
     },
     package:{
-        type:Number,
-        required: [true, "Pricing field required"]
+        type:String,
+        required: [true, "Package field required"]
     },
     complete:{
         type:Boolean,

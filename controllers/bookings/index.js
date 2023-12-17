@@ -36,7 +36,9 @@ exports.addBooking=async (req,res)=>{
                 }
 
             }else{
+                console.log("111111111")
                 if(user.package === service.pid.name){
+                    console.log("222222222222222")
                     const newBooking = new Bookings({
                         uid:uid,
                         sid:service.sid._id,
@@ -52,21 +54,17 @@ exports.addBooking=async (req,res)=>{
                         res.status(500).json({status:'error occured while saving booking2'});
                     }
                 }else{
-                    res.status(200).json({status:'unauthorized',data:"You have not subscribed to this package"});
+                    console.log("3333333333333")
+                    res.status(401).json({status:'unauthorized',data:"You have not subscribed to this package"});
                 }
             }
         }else{
             res.status(500).json({status:'error',data:"User not found"});
         }
 
-        if(serviceSave){
-            res.status(200).json({status:'success'});  
-        }else{
-            res.status(500).json({status:'Error in saving'});  
-        }
-
     }catch(err){
-        throw new Error(err.message);
+        console.log(err);
+        res.status(500).json({status:"error",data:err.message});
     }
 }
 
