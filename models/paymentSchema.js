@@ -6,21 +6,38 @@ const paymentSchema=new mongoose.Schema({
         ,
         ref:'users',
     },
-    transaction_id:{
-        type:String,
-        required: [true, "Transaction Id field required"]
+    bid:{
+        type:mongoose.Schema.Types.ObjectId
+        ,
+        ref:'bookings',
     },
-    amount:{
+    pid:{
+        type:mongoose.Schema.Types.ObjectId
+        ,
+        ref:'packages',
+    },
+    session_id:{
+        type:String,
+        required: [true, "Session Id field required"]
+    },
+    amount_subtotal:{
         type:Number,
         required: [true, "Amount field required"]
     },
+    amount_total:{
+        type:Number,
+        required: [true, "Amount field required"]
+    },
+    payment_method:{
+        type:String,
+        required: [true, "Payment Method field required"]
+    },
     package:{
         type:String,
-        required: [true, "package field required"]
     },
-    confirmed:{
-        type:Boolean,
-        required: [true, "Confirmed field required"]
+    payment_status:{
+        type:String,
+        required: [true, "Payment Status field required"]
     },
     time_of_transaction:{
         type:String,
@@ -33,4 +50,4 @@ const paymentSchema=new mongoose.Schema({
 );
 
 //---------------------------------------------------
-module.exports=mongoose.model('payments',paymentsSchema);const mongoose=require('mongoose');
+module.exports=mongoose.model('payments',paymentSchema);

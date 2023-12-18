@@ -119,8 +119,8 @@ function randomFixedInteger(length) {
 //---------Generate One time Stripe Link-------
 async function generateOneTimePaymentLink(service,user,booking) {
     try{
-        console.log(user)
-        const session = await stripe.checkout.sessions.create({
+        const stripeParams = {
+            mode: 'payment',
             payment_method_types: ['card'],
             line_items: [
             {
@@ -134,15 +134,17 @@ async function generateOneTimePaymentLink(service,user,booking) {
                 quantity: 1,
             },
             ],
-            mode: 'payment',
             metadata:{
-                bid: booking._id,
-                uid: user._id
+                bid: booking._id.toString(),
+                uid: user._id.toString()
             },
             success_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
             cancel_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
             customer_email:"harmonicsub8@gmail.com"
-        });
+        }
+        console.log(user,stripeParams);
+
+        const session = await stripe.checkout.sessions.create(stripeParams);
           
         console.log("session.idsession.idsession.id: ",session);
         if(session){
@@ -161,32 +163,35 @@ async function generateOneTimePaymentLink(service,user,booking) {
 //---------Generate Subscription Stripe Link-------
 async function generateSubscriptionPaymentLink(user,package) {
     try{
+        let packageId;
+        if(package.name==="subscription basic"){
+            packageId = process.env.SUB_BASIC
+        }else if(package.name==="subscription intermediate"){
+            packageId = process.env.SUB_INTERMEDIATE
+        }else if(package.name==="subscription premium"){
+            packageId = process.env.SUB_PREMIUM
+        }
+
         console.log(user,package);
         const session = await stripe.checkout.sessions.create({
+            mode: 'subscription',
             payment_method_types: ['card'],
             line_items: [
             {
-                price_data: {
-                currency: 'usd',
-                product_data: {
-                    name: package.name,
-                },
-                unit_amount: Math.round(package.pricing * 100),
-                },
+                price:packageId,
                 quantity: 1,
             },
             ],
-            mode: 'subscription',
             metadata:{
-                uid: user._id,
-                pid: package._id
+                uid: user._id.toString(),
+                pid: package._id.toString()
             },
             success_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
             cancel_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
             customer_email:"harmonicsub8@gmail.com"
         });
           
-        // console.log("session.idsession.idsession.id: ",session);
+        console.log("session.idsession.idsession.id: ",session);
         if(session){
             return session
         }else{
