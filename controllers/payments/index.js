@@ -6,7 +6,7 @@ exports.confirmPayment=async (req,res)=>{
         const { session_id } = req.fields;
         const id = req.user.id;
         
-        const session_info = Mservice.getPaymentStatus(session_id);
+        const session_info = await Mservice.getPaymentStatus(session_id);
         if(session_info){
             res.status(200).json({status:'success'}); 
             // if (session_info.payment_status === 'paid') {

@@ -171,7 +171,7 @@ async function generateSubscriptionPaymentLink(user,package) {
                 product_data: {
                     name: package.name,
                 },
-                price: Math.round(package.pricing * 100),
+                unit_amount: Math.round(package.pricing * 100),
                 },
                 quantity: 1,
             },
@@ -207,8 +207,9 @@ async function generateSubscriptionPaymentLink(user,package) {
 async function getPaymentStatus(session_id) {
     try{
         const session = await stripe.checkout.sessions.retrieve(session_id);
-        console.log("getPaymentStatusgetPaymentStatus: ",getPaymentStatus);
+
         if(session){
+            console.log("getPaymentStatusgetPaymentStatus: ",session);
             return session
         }else{
             return false
