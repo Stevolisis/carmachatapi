@@ -161,6 +161,7 @@ async function generateOneTimePaymentLink(service,user,booking) {
 //---------Generate Subscription Stripe Link-------
 async function generateSubscriptionPaymentLink(user,package) {
     try{
+        console.log(user,package);
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
@@ -170,7 +171,7 @@ async function generateSubscriptionPaymentLink(user,package) {
                 product_data: {
                     name: package.name,
                 },
-                unit_amount: Math.round(package.amount * 100),
+                price: Math.round(package.pricing * 100),
                 },
                 quantity: 1,
             },
@@ -178,7 +179,7 @@ async function generateSubscriptionPaymentLink(user,package) {
             mode: 'subscription',
             metadata:{
                 uid: user._id,
-                pid: package
+                pid: package._id
             },
             success_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
             cancel_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',

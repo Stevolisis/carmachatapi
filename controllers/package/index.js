@@ -79,18 +79,18 @@ exports.subscribeToPackage=async (req,res)=>{
     try{
         const { package }=req.fields;
         const uid = req.user.id;
-        const user = Users.findOne({_id:uid});
-        const findPackage = Packages.findOne({name:package});
+        const user = await Users.findOne({_id:uid});
+        const findPackage = await Packages.findOne({name:package});
 
         if(findPackage){
             if(user.package === package){
                 res.status(200).json({status:'Package already registered by you'});
             }else{
-                const payStripe = await Mservice.generateSubscriptionPaymentLink(user,package);
+                const payStripe = await Mservice.generateSubscriptionPaymentLink(user,findPackage);
                 console.log("payStripepayStripeSUbSubSub: ",payStripe);
                 
                 if(payStripe){
-                    res.status(200).json({status:'success',link:`https://checkout.stripe.com/pay/${payStripe.id}`});
+                    res.status(200).json({status:'success',data:payStripe.url});
                 }else{
                     res.status(500).json({status:'error occured while generating payment link'});
                 }
