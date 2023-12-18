@@ -140,7 +140,7 @@ async function generateOneTimePaymentLink(service,user,booking) {
             },
             success_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
             cancel_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
-            customer_email:"harmonicsub8@gmail.com"
+            customer_email:user.email
         }
         console.log(user,stripeParams);
 
@@ -184,11 +184,12 @@ async function generateSubscriptionPaymentLink(user,package) {
             ],
             metadata:{
                 uid: user._id.toString(),
-                pid: package._id.toString()
+                pid: package._id.toString(),
+                stripe_product_id: packageId
             },
             success_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
             cancel_url: 'http://localhost:3000/bookings?session_id={CHECKOUT_SESSION_ID}',
-            customer_email:"harmonicsub8@gmail.com"
+            customer_email:user.email
         });
           
         console.log("session.idsession.idsession.id: ",session);

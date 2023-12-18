@@ -22,6 +22,9 @@ const userSchema=new mongoose.Schema({
         type:String,
         required: [true, "Package field required"]
     },
+    stripe_product_id:{
+        type:String,
+    },
     day:{
         type:String,
         required: [true, "day field required"],

@@ -1,5 +1,6 @@
 const Tickets = require("../../models/ticketSchema");
 const Users = require("../../models/userSchema");
+const Staffs = require("../../models/staffSchema");
 const Mservice = require("../../utils/micro_functions");
 
 exports.getAllTickets=async (req,res)=>{
@@ -75,7 +76,7 @@ exports.addTicket=async (req,res)=>{
         });
 
         await ticketSave.save()
-        const mail= await Mservice.sendMail("support",`[Ticket ID: ${ticketSave._id}] ${subject}`,"stevolisisjosephpur@gmail.com",{
+        const mail= await Mservice.sendMail("support",`[Ticket ID: ${ticketSave._id}] ${subject}`,user.email,{
             name:user.full_name,
             ticket:{
                 subject: subject,
@@ -113,7 +114,7 @@ exports.updateTicketStatus=async (req,res)=>{
                 status:req.fields.status,
                 updateAt:new Date().toISOString()
             }});
-            const mail = await Mservice.sendMail("ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,"stevolisisjosephpur@gmail.com",{
+            const mail = await Mservice.sendMail("ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,ticket.creator.email,{
                 name:ticket.creator.full_name,
                 link:`http://localhost:3000/ticket_info2/${id}`,
                 message:`Your Ticket has been ${req.fields.status}`,
@@ -156,7 +157,7 @@ exports.replyTicket=async (req,res)=>{
         }});
         
         if(from==="staff"){
-            await Mservice.sendMail("ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,"stevolisisjosephpur@gmail.com",{
+            await Mservice.sendMail("ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,user.email,{
                 name:user.full_name,
                 link:`http://localhost:3000/ticket_replies2/${id}`,
                 message:req.fields.msg,
@@ -167,7 +168,8 @@ exports.replyTicket=async (req,res)=>{
                 }
             });
         }else{
-            await Mservice.sendMail("notify_staff_ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,"stevolisisjoseph@gmail.com",{
+            const staff = Staffs.findOne({_id:req.user.id});
+            staff && await Mservice.sendMail("notify_staff_ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,staff.email,{
                 message:req.fields.msg,
                 link:`http://localhost:3000/ticket_replies/${id}`,
                 ticket:{

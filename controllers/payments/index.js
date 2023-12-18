@@ -56,12 +56,13 @@ exports.confirmPayment=async (req,res)=>{
                             amount_total:session_info.amount_total/100,
                             payment_method:session_info.payment_method_types[0],
                             package:pack.name,
+                            stripe_product_id:session_info.metadata.stripe_product_id,
                             payment_status:session_info.payment_status,
                             time_of_transaction:formattedDate,
                         });
                         
                         const updateUser = Users.updateOne({_id:session_info.metadata.uid},{
-                            $set:{package:pack?.name}
+                            $set:{package:pack?.name,stripe_product_id:session_info.metadata.stripe_product_id}
                         });
 
                         await Promise.all([newPayment.save(),updateUser])

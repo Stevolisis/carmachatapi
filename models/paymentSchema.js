@@ -35,6 +35,9 @@ const paymentSchema=new mongoose.Schema({
     package:{
         type:String,
     },
+    stripe_product_id:{
+        type:String,
+    },
     payment_status:{
         type:String,
         required: [true, "Payment Status field required"]
