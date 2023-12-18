@@ -168,7 +168,8 @@ exports.replyTicket=async (req,res)=>{
                 }
             });
         }else{
-            const staff = Staffs.findOne({_id:req.user.id});
+            const staff = await Staffs.findOne({_id:req.user.id});
+            console.log(req.user,staff);
             staff && await Mservice.sendMail("notify_staff_ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,staff.email,{
                 message:req.fields.msg,
                 link:`http://localhost:3000/ticket_replies/${id}`,
