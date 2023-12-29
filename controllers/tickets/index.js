@@ -100,10 +100,11 @@ exports.updateTicketStatus=async (req,res)=>{
     try{
         const { id } = req.params;
         const ticket=await Tickets.findOne({_id:id}).populate("creator");
+        const { status } = req.fields;
 
-        if(req.fields.status === "In Progress"){
+        if(status === "In Progress"){
             const ticketUpdate=await Tickets.updateOne({_id:id},{$set:{
-                status:req.fields.status,
+                status:status,
                 staff:req.user.id,
                 updateAt:new Date().toISOString()
             }});
@@ -111,16 +112,16 @@ exports.updateTicketStatus=async (req,res)=>{
             if(ticketUpdate) res.status(200).json({status:'success'});            
         }else{
             const ticketUpdate=await Tickets.updateOne({_id:id},{$set:{
-                status:req.fields.status,
+                status:status,
                 updateAt:new Date().toISOString()
             }});
             const mail = await Mservice.sendMail("ticket_update",`Update on [Ticket ID: ${ticket._id}] ${ticket.subject}`,ticket.creator.email,{
                 name:ticket.creator.full_name,
                 link:`http://localhost:3000/ticket_info2/${id}`,
-                message:`Your Ticket has been ${req.fields.status}`,
+                message:`Your Ticket has been ${status}`,
                 ticket:{
                     subject: ticket.subject,
-                    status: req.fields.status,
+                    status: status,
                     priority: ticket.priority
                 }
             });

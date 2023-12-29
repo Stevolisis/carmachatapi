@@ -56,7 +56,7 @@ exports.login=async (req,res,next)=>{
                 return;
             }
             
-            const token=Mservice.generateToken(checking._id,60 * 60 * 24 * 30);
+            const token=Mservice.generateToken({id:checking._id,name:checking.full_name,role:"user"},60 * 60 * 24 * 30);
             
             res.status(202).json({status:'success',data:{token:token}});
     

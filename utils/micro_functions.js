@@ -83,10 +83,10 @@ async function validatePassword(password,passwordToValidate) {
 
 
 //------------Generate Token-------------
-function generateToken(id,duration) {
+function generateToken(user,duration) {
 
     try{
-        const token = jwt.sign({ id: id }, process.env.JWT_PASS, { expiresIn: duration });
+        const token = jwt.sign({ id: user.id,name:user.name,role:user.role }, process.env.JWT_PASS, { expiresIn: duration });
         if(!token) throw new Error('Generate Token Error')
         return token;
 
